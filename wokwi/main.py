@@ -1,115 +1,122 @@
-print('hello before utime')
-import utime
-# utime.sleep(1)
-print('hello')
-utime.sleep_ms(200)
+"""
+IoT device firmware for the 1DV027 IoT assignment.
 
-# after having waited - if you are having trouble starting main.py
-print('Sleep Done')
-# from machine import Pin
-from umqtt.simple import MQTTClient
+Reads temperature and humidity from a DHT22 sensor and publishes the values
+as JSON to broker.emqx.io every 2 seconds. Subscribes to a command topic
+and toggles an LED in response to incoming control messages.
+"""
+
+__author__ = 'Hanna Rubio Vretby <hr222sy@student.lnu.se>'
+__version__ = '1.0.0'
+
+import json
+import network
 import ubinascii
 import machine
-from machine import Pin
-import network
-import usocket
-import urequests # handles making and servicing network requests
 import dht
-import errno
-import json
-import socket
-import select
-import sys
+import utime
+import ntptime
+from machine import Pin
+from umqtt.simple import MQTTClient
 
 
-# Simple-ish DHT class to simplify working with the sensor
-class DHT:
-    def __init__(self, pin: int):
-        self.pin = self.setPin(pin)
-        self.sensor = self.setDht(self.pin)
+# ----- Configuration -----
+WIFI_SSID = 'Wokwi-GUEST'
+WIFI_PASSWORD = ''
 
-    def setDht(self, pin: Pin):
-        return dht.DHT11(pin)
+MQTT_BROKER = 'broker.emqx.io'
+MQTT_PORT = 1883
+MQTT_KEEPALIVE = 60
 
-    def setPin(self, pin: int):
-        return Pin(pin)
+STUDENT_ID = 'hr222sy'
+TOPIC_SENSOR = f'lnu/iot/{STUDENT_ID}/sensor'.encode()
+TOPIC_COMMAND_LED = f'lnu/iot/{STUDENT_ID}/command/led'.encode()
 
-    def measure(self):
-        self.sensor.measure()
+PIN_DHT = 33
+PIN_LED = 27
+PUBLISH_INTERVAL_SEC = 2
 
-    def getTemperature(self):
-        return self.sensor.temperature()
 
-    def getHumidity(self):
-        return self.sensor.humidity()
+# ----- Hardware setup -----
+led = Pin(PIN_LED, Pin.OUT)
+dht_sensor = dht.DHT22(Pin(PIN_DHT))
 
-led = Pin(27, Pin.OUT)
 
-# Fill in your network name (ssid) and password here:
-ssid = 'Wokwi-GUEST'
-password = ''
-
-def connect(ssid, passw):
-    #Connect to WLAN
+# ----- Helpers -----
+def connect_wifi(ssid, password):
+    """Connect to the given Wi-Fi network and block until connected."""
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     wlan.connect(ssid, password)
-    while wlan.isconnected() == False:
-        print('Waiting for connection...')
+    while not wlan.isconnected():
+        print('Waiting for Wi-Fi connection...')
         utime.sleep(1)
-    print(wlan.ifconfig())
+    print('Wi-Fi connected:', wlan.ifconfig())
 
-connect(ssid, password)
 
-print('Waiting a little bit before the Mosquitto loop starts.')
+def sync_time():
+    """Sync the device clock with NTP so timestamps are accurate Unix epoch."""
+    try:
+        ntptime.settime()
+        print('Clock synced via NTP.')
+    except Exception as e:
+        print('NTP sync failed:', e)
 
-timeElapsed = 0
 
-while timeElapsed < 5:
-    timeElapsed += 1
-    print(f"{timeElapsed} out of 5 seconds passed...")
-    utime.sleep_ms(1000)
+def on_command(topic, msg):
+    """Callback for incoming command messages on the LED topic."""
+    print(f'Received on {topic.decode()}: {msg.decode()}')
+    try:
+        payload = json.loads(msg)
+        if payload.get('state') is True:
+            led.on()
+            print('LED turned ON')
+        elif payload.get('state') is False:
+            led.off()
+            print('LED turned OFF')
+    except (ValueError, KeyError) as e:
+        print('Ignoring invalid command payload:', e)
 
-# mqqt stuff below
-MQTT_BROKER = "my-secret-id.s1.eu.hivemq.cloud"
-MQTT_PORT = "8883"
+
+# ----- Main -----
+connect_wifi(WIFI_SSID, WIFI_PASSWORD)
+sync_time()
+
 CLIENT_ID = ubinascii.hexlify(machine.unique_id())
-SUBSCRIBE_TOPIC = b"test/topic"
-PUBLISH_TOPIC = b"test/temperature"
-ssl_params = {
-    "server_hostname": MQTT_BROKER
-}
-
-# callback stuff
-def sub_cb(topic, msg):
-    print(f'Callback message: {msg.decode()}')
-
-# mqtt stuff starts
-mqttClient = MQTTClient(CLIENT_ID, MQTT_BROKER, keepalive=60, user=b"my-username", password=b"my-password", ssl=True, ssl_params=ssl_params)
-mqttClient.set_callback(sub_cb)
-
-print(mqttClient.user)
-mqttClient.connect()
-mqttClient.subscribe(SUBSCRIBE_TOPIC)
+mqtt_client = MQTTClient(
+    CLIENT_ID,
+    MQTT_BROKER,
+    port=MQTT_PORT,
+    keepalive=MQTT_KEEPALIVE
+)
+mqtt_client.set_callback(on_command)
+mqtt_client.connect()
+mqtt_client.subscribe(TOPIC_COMMAND_LED)
+print(f'Connected to {MQTT_BROKER}:{MQTT_PORT}, subscribed to {TOPIC_COMMAND_LED.decode()}')
 
 
-
-
-dht_sensor = DHT(33)
-counter = 0
 while True:
-    # mqtt stuff ends
-    counter += 1
-    print('hi, starting')
-    dht_sensor.measure()
-    humidity = dht_sensor.getHumidity()
-    temperature = dht_sensor.getTemperature()
-    led.on()
-    utime.sleep_ms(500)
-    led.off()
+    # Process any pending command messages without blocking.
+    mqtt_client.check_msg()
 
-    print('alive')
-    print(f"Temperature: {temperature}° C\nHumidity: {humidity}%")
-    # attempt to publish
-    mqttClient.publish(topic=PUBLISH_TOPIC, msg=str(temperature).encode(), retain=False, qos=0)
-    utime.sleep_ms(3000)
+    # Read sensor.
+    try:
+        dht_sensor.measure()
+        temperature = dht_sensor.temperature()
+        humidity = dht_sensor.humidity()
+    except OSError as e:
+        print('Sensor read failed:', e)
+        utime.sleep(PUBLISH_INTERVAL_SEC)
+        continue
+
+    # Build and publish payload.
+    payload = {
+        'temperature': temperature,
+        'humidity': humidity,
+        'timestamp': utime.time()
+    }
+    mqtt_client.publish(TOPIC_SENSOR, json.dumps(payload).encode())
+    print(f'Published: {payload}')
+
+    utime.sleep(PUBLISH_INTERVAL_SEC)
+    
