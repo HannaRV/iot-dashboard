@@ -1,0 +1,5 @@
+[wokwi]
+version = 1
+firmware = 'firmware.bin'
+# Creates a virtual serial port on localhost:4000
+rfc2217ServerPort = 4000
