@@ -204,4 +204,7 @@ __pycache__/
 ### Wokwi ###
 .wokwi/
 
+### Wokwi firmware (downloaded separately) ###
+wokwi/firmware.bin
+
 # End of https://www.toptal.com/developers/gitignore/api/node,linux,macos,windows,visualstudiocode
