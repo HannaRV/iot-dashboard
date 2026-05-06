@@ -4,10 +4,12 @@ IoT device firmware for the 1DV027 IoT assignment.
 Reads temperature and humidity from a DHT22 sensor and publishes the values
 as JSON to broker.emqx.io every 2 seconds. Subscribes to a command topic
 and toggles an LED in response to incoming control messages.
+
+Reconnects automatically if the MQTT connection is lost.
 """
 
 __author__ = 'Hanna Rubio Vretby <hr222sy@student.lnu.se>'
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 
 import json
 import network
@@ -27,6 +29,7 @@ WIFI_PASSWORD = ''
 MQTT_BROKER = 'broker.emqx.io'
 MQTT_PORT = 1883
 MQTT_KEEPALIVE = 60
+RECONNECT_DELAY_SEC = 5
 
 STUDENT_ID = 'hr222sy'
 TOPIC_SENSOR = f'lnu/iot/{STUDENT_ID}/sensor'.encode()
@@ -78,26 +81,47 @@ def on_command(topic, msg):
         print('Ignoring invalid command payload:', e)
 
 
+def connect_mqtt():
+    """Create and connect MQTT client, then subscribe to the command topic."""
+    client_id = ubinascii.hexlify(machine.unique_id())
+    client = MQTTClient(
+        client_id,
+        MQTT_BROKER,
+        port=MQTT_PORT,
+        keepalive=MQTT_KEEPALIVE
+    )
+    client.set_callback(on_command)
+    client.connect()
+    client.subscribe(TOPIC_COMMAND_LED)
+    print(f'Connected to {MQTT_BROKER}:{MQTT_PORT}, subscribed to {TOPIC_COMMAND_LED.decode()}')
+    return client
+
+
+def reconnect_mqtt():
+    """Reconnect to the MQTT broker after a disconnection, retrying until successful."""
+    print('MQTT connection lost. Reconnecting...')
+    while True:
+        try:
+            return connect_mqtt()
+        except OSError as e:
+            print(f'Reconnect failed: {e}. Retrying in {RECONNECT_DELAY_SEC}s...')
+            utime.sleep(RECONNECT_DELAY_SEC)
+
+
 # ----- Main -----
 connect_wifi(WIFI_SSID, WIFI_PASSWORD)
 sync_time()
-
-CLIENT_ID = ubinascii.hexlify(machine.unique_id())
-mqtt_client = MQTTClient(
-    CLIENT_ID,
-    MQTT_BROKER,
-    port=MQTT_PORT,
-    keepalive=MQTT_KEEPALIVE
-)
-mqtt_client.set_callback(on_command)
-mqtt_client.connect()
-mqtt_client.subscribe(TOPIC_COMMAND_LED)
-print(f'Connected to {MQTT_BROKER}:{MQTT_PORT}, subscribed to {TOPIC_COMMAND_LED.decode()}')
+mqtt_client = connect_mqtt()
 
 
 while True:
     # Process any pending command messages without blocking.
-    mqtt_client.check_msg()
+    try:
+        mqtt_client.check_msg()
+    except OSError as e:
+        print(f'check_msg failed: {e}')
+        mqtt_client = reconnect_mqtt()
+        continue
 
     # Read sensor.
     try:
@@ -105,7 +129,7 @@ while True:
         temperature = dht_sensor.temperature()
         humidity = dht_sensor.humidity()
     except OSError as e:
-        print('Sensor read failed:', e)
+        print(f'Sensor read failed: {e}')
         utime.sleep(PUBLISH_INTERVAL_SEC)
         continue
 
@@ -115,8 +139,12 @@ while True:
         'humidity': humidity,
         'timestamp': utime.time()
     }
-    mqtt_client.publish(TOPIC_SENSOR, json.dumps(payload).encode())
-    print(f'Published: {payload}')
+    try:
+        mqtt_client.publish(TOPIC_SENSOR, json.dumps(payload).encode())
+        print(f'Published: {payload}')
+    except OSError as e:
+        print(f'Publish failed: {e}')
+        mqtt_client = reconnect_mqtt()
+        continue
 
     utime.sleep(PUBLISH_INTERVAL_SEC)
-    
