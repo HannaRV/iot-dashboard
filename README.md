@@ -1,4 +1,6 @@
-# iot-dashboard
+# IoT Dashboard
+
+End-to-end IoT pipeline: Wokwi-simulated ESP32 publishes sensor data via MQTT to a Node.js backend with MongoDB time-series storage, visualized in a real-time Vanilla JS dashboard. 1DV027 — Linnaeus University.
 
 ![Wokwi](https://img.shields.io/badge/Wokwi-FFCA28?style=for-the-badge&logo=wokwi&logoColor=black)
 ![ESP32](https://img.shields.io/badge/ESP32-E7352C?style=for-the-badge&logo=espressif&logoColor=white)
@@ -13,84 +15,68 @@
 ![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-## Submission Report Template
+## 1. Project Links
 
-Include the following sections in your report:
+| Resource | URL |
+|---|---|
+| Live Dashboard | _TODO_ |
+| Wokwi Simulation | https://wokwi.com/projects/463274235615279105 |
+| Backend/Database | _TODO_ |
+| Source Repository | https://github.com/HannaRV/iot-dashboard |
 
-### 1) Project Links
-- **Live Dashboard URL:** [Link to deployed frontend, e.g. Vercel/Netlify/Cumulus]
-- **Wokwi Simulation URL:** [\[Public Wokwi project link\]](https://wokwi.com/projects/463274235615279105)
-- **Backend/Database URL:** [Link to deployed backend stack, if applicable]
-- **Repository URL:** [https://github.com/HannaRV/iot-dashboard]
+## 2. Project Overview
 
-### 2) Project Overview
-Briefly describe:
-- What your project does.
-- Which hardware/sensors you simulated.
-- What the dashboard allows the user to monitor/control.
+_TODO_
 
-### 3) Architecture and Data Flow
-Explain how data moves through your system:
-- Wokwi device -> MQTT broker -> processing layer/database -> dashboard.
-- Dashboard -> MQTT command topic -> device action.
+## 3. Architecture and Data Flow
 
-Use the placeholder below and replace it with your own architecture screenshot or diagram:
+_TODO: Insert architecture diagram (Mermaid or screenshot) with explicit protocol labels (MQTT, WebSocket, HTTP/HTTPS)._
 
-```md
-[Insert architecture diagram or screenshot here]
+## 4. Database Strategy
+
+**Database:** MongoDB time-series collection.
+
+_TODO: Document data model, indexing strategy, retention policy, and aggregation approach._
+
+## 5. MQTT Topics and Payload Documentation
+
+### Sensor Data (published by device)
+
+- **Topic:** `lnu/iot/hr222sy/sensor`
+- **Frequency:** Every 2 seconds
+- **Payload (JSON):**
+```json
+  {
+    "temperature": 22.5,
+    "humidity": 45.0,
+    "timestamp": 1710063386
+  }
 ```
 
-Your diagram must explicitly label the communication protocols used between components (for example MQTT, WebSocket, HTTP/HTTPS).
+### Device Commands (published by dashboard)
 
-Example Mermaid diagram (you can copy and adapt):
-
-```mermaid
-flowchart TD
-  A[Wokwi Device] -->|MQTT publish: sensor data| B[MQTT Broker]
-  B -->|sensor data| C[Backend Service]
-  C --> D[(Database)]
-  C -->|REST API| E[Web Dashboard]
-  E <-->|WebSocket, realtid| C
-  E -->|send command| C
-  C -->|MQTT publish: command| B
-  B -->|control message| A
+- **Topic:** `lnu/iot/hr222sy/command/led`
+- **Payload (JSON):**
+```json
+  { "state": true }
 ```
 
-### 4) Database Strategy
-Document:
-- **Database chosen:** (for example InfluxDB, MongoDB, TimescaleDB)
-- **Data model:** measurement/collection/table structure
-- **Time-series considerations:** retention, indexing, query strategy, aggregation, etc.
+The schema extends the assignment's recommended payload to include both temperature and humidity (DHT22 returns both) and a Unix timestamp synced via NTP.
 
-### 5) MQTT Topics and Payload Documentation
-List all topics used and provide example payloads. This should be precise enough to serve as integration documentation for your device and dashboard communication.
+## 6. Reflection
 
-### 6) Reflection
-Answer the following:
-1. Which frontend technologies did you choose, and why?
-2. How does handling real-time MQTT data over WebSockets differ from a standard REST API workflow?
-3. What was the most challenging integration step (hardware, broker, backend, database, frontend), and how did you solve it?
+### Which frontend technologies did you choose, and why?
 
-## Hand-in Instructions
+_TODO_
 
-Submit your work by creating a Merge Request targeting the `lnu/submit-branch`.
+### How does handling real-time MQTT data over WebSockets differ from a standard REST API workflow?
 
-If you used additional repositories or external services, include links to them in your submission report.
+_TODO_
 
-## Grade Levels
+### What was the most challenging integration step (hardware, broker, backend, database, frontend), and how did you solve it?
 
-- **G:** Complete all mandatory requirements in this README.
-- **VG:** Complete all mandatory requirements **and** at least one optional VG extension.
+_TODO_
 
-### Grading Policy Mapping
+## VG Extension: VG-C — Self-hosted MQTT Broker
 
-- **Mandatory (G) mapping:** Equivalent to completing Issue 1-7 in `ISSUES.md`.
-- **Issue 4 path rule:** You must complete either Path A (custom API) or Path C (Node-RED historical access), and document your chosen approach.
-- **Optional (VG) mapping:** Equivalent to completing at least one of VG-A, VG-B, or VG-C in `ISSUES.md`.
-
-For any VG extension, include:
-- Security considerations (secrets handling, credentials, access restrictions).
-- Evidence (screenshots/video/logs) and short technical reflection.
-
-
-
+_TODO: Document EMQX setup in Docker on DigitalOcean, auth + ACL configuration, TLS, security considerations, and risk comparison vs. public broker._
