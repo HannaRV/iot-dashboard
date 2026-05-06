@@ -19,7 +19,7 @@ Include the following sections in your report:
 
 ### 1) Project Links
 - **Live Dashboard URL:** [Link to deployed frontend, e.g. Vercel/Netlify/Cumulus]
-- **Wokwi Simulation URL:** [Public Wokwi project link]
+- **Wokwi Simulation URL:** [\[Public Wokwi project link\]](https://wokwi.com/projects/463274235615279105)
 - **Backend/Database URL:** [Link to deployed backend stack, if applicable]
 - **Repository URL:** [https://github.com/HannaRV/iot-dashboard]
 
