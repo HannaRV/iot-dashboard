@@ -5,7 +5,7 @@
 
 import mqtt from 'mqtt'
 import { config } from './config.js'
-import { database } from './database.js'
+import { database } from './Database.js'
 
 /**
  * Subscribes to the device's sensor topic on the MQTT broker, parses incoming

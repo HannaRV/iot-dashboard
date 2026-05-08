@@ -26,7 +26,8 @@ export const config = {
   mongodb: {
     uri: required('MONGODB_URI'),
     dbName: process.env.DB_NAME || 'iot_dashboard',
-    collection: 'sensor_readings'
+    collection: 'sensor_readings',
+    retentionDays: 7
   },
   http: {
     port: Number(process.env.HTTP_PORT) || 3000

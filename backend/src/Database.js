@@ -70,9 +70,10 @@ export class Database {
         timeField: 'timestamp',
         metaField: 'deviceId',
         granularity: 'seconds'
-      }
+      },
+      expireAfterSeconds: 60 * 60 * 24 * 7  // 7 days
     })
-    console.log(`Created time-series collection '${config.mongodb.collection}'.`)
+    console.log(`Created time-series collection '${config.mongodb.collection}' with ${config.mongodb.retentionDays}-day TTL.`)
   }
 }
 
