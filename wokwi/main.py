@@ -112,7 +112,7 @@ def reconnect_mqtt():
 # ----- Main -----
 connect_wifi(WIFI_SSID, WIFI_PASSWORD)
 sync_time()
-mqtt_client = connect_mqtt()
+mqtt_client = reconnect_mqtt()
 
 
 while True:
