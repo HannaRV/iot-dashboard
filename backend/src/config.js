@@ -13,12 +13,15 @@ const required = (name) => {
   return value
 }
 
+const deviceId = 'hr222sy'
+
 export const config = {
   mqtt: {
     broker: process.env.MQTT_BROKER || 'broker.emqx.io',
     port: Number(process.env.MQTT_PORT) || 1883,
     keepalive: 60,
-    topic: 'lnu/iot/hr222sy/sensor'
+    deviceId,
+    topic: `lnu/iot/${deviceId}/sensor`
   },
   mongodb: {
     uri: required('MONGODB_URI'),
