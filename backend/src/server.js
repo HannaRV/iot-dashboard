@@ -8,10 +8,11 @@ import express from 'express'
 import { database } from './Database.js'
 import { ingestion } from './MqttIngestion.js'
 import { config } from './config.js'
+import { router as apiRouter } from './api.js'
 
 const app = express()
 
-// API routes will be mounted here once api.js is implemented.
+app.use('/api', apiRouter)
 
 let server = null
 
