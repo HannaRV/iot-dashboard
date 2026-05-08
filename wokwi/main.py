@@ -12,6 +12,7 @@ __author__ = 'Hanna Rubio Vretby <hr222sy@student.lnu.se>'
 __version__ = '1.1.0'
 
 import json
+import random
 import network
 import ubinascii
 import machine
@@ -126,8 +127,9 @@ while True:
     # Read sensor.
     try:
         dht_sensor.measure()
-        temperature = dht_sensor.temperature()
-        humidity = dht_sensor.humidity()
+        # Add small random noise to simulate real DHT22 sensor variation (spec: ±0.5°C, ±2-5% RH).
+        temperature = round(dht_sensor.temperature() + random.uniform(-0.3, 0.3), 1)
+        humidity = round(dht_sensor.humidity() + random.uniform(-1.0, 1.0), 1)
     except OSError as e:
         print(f'Sensor read failed: {e}')
         utime.sleep(PUBLISH_INTERVAL_SEC)
