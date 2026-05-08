@@ -1,0 +1,22 @@
+{
+  "name": "iot-dashboard-backend",
+  "version": "1.0.0",
+  "description": "Backend for the 1DV027 IoT Dashboard: ingests sensor data from broker.emqx.io via MQTT, persists to MongoDB time-series, and exposes a historical data API.",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "Hanna Rubio Vretby <hr222sy@student.lnu.se>",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongodb": "^7.2.0",
+    "mqtt": "^5.15.1"
+  }
+}
