@@ -12,7 +12,8 @@ const deviceId = 'hr222sy'
 export const config = Object.freeze({
   api: Object.freeze({
     baseUrl: 'http://localhost:3000/api', // change to deployed URL at deploy time
-    historicalWindowMinutes: 30
+    historicalWindowMinutes: 30,
+    requestTimeoutMs: 10000 // abort fetch after 10 s to surface backend issues quickly
   }),
   mqtt: Object.freeze({
     // wss endpoint for browser MQTT-over-WebSocket. Path /mqtt is broker.emqx.io convention.
