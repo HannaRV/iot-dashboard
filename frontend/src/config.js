@@ -11,7 +11,8 @@ const deviceId = 'hr222sy'
 // at runtime — e.g., a compromised library cannot redirect API or broker URLs.
 export const config = Object.freeze({
   api: Object.freeze({
-    baseUrl: 'http://localhost:3000/api',
+    // Frontend and backend are served same-origin (Express in dev and prod), so all API requests are relative paths.
+    baseUrl: '/api',
     historicalWindowMinutes: 10,
     requestTimeoutMs: 10000
   }),

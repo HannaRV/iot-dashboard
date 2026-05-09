@@ -7,12 +7,19 @@
  */
 
 import express from 'express'
-import cors from 'cors'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import { config } from './config.js'
 import { Database } from './Database.js'
 import { MqttIngestion } from './MqttIngestion.js'
 import { createApiRouter } from './api.js'
+
+// Resolve frontend directory relative to this file. In dev and in the Docker
+// container, the frontend is sibling to backend/, so two levels up from src/.
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const frontendDir = path.resolve(__dirname, '../../frontend')
 
 // Composition root: construct and wire all dependencies.
 const database = new Database(config.mongodb)
@@ -20,7 +27,7 @@ const ingestion = new MqttIngestion(database, config.mqtt)
 const apiRouter = createApiRouter(database)
 
 const app = express()
-app.use(cors({ origin: config.http.corsOrigin }))
+app.use(express.static(frontendDir))
 app.use('/api', apiRouter)
 
 let server = null
