@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IoT Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <!--
+      Pinned versions + SRI hashes ensure CDN tampering cannot inject malicious code.
+      Get hashes from https://www.srihash.org/ by pasting the script URL.
+    -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"
+      integrity="sha384-e6nUZLBkQ86NJ6TVVKAeSaK8jWa3NhkYWZFomE39AvDbQWeie9PlQqM3pmYW5d1g"
+      crossorigin="anonymous"
+      defer
+    ></script>
+    <script
+      src="https://unpkg.com/mqtt@5.10.0/dist/mqtt.min.js"
+      integrity="sha384-gJhvQsN57KNXYL4JyqLSJ/FhxQ9D8maRtt7MQuCiJOkXyPYeybib9oziAcw4Kajn"
+      crossorigin="anonymous"
+      defer
+    ></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>IoT Dashboard</h1>
+      <div class="connection-status" data-connection-status>
+        <span class="indicator" data-connection-indicator></span>
+        <span data-connection-text>Connecting…</span>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <section class="metrics" aria-label="Latest sensor readings">
+        <div class="metric">
+          <h2 class="metric__label">Temperature</h2>
+          <p class="metric__value">
+            <span data-temperature>—</span><span class="metric__unit"> °C</span>
+          </p>
+        </div>
+        <div class="metric">
+          <h2 class="metric__label">Humidity</h2>
+          <p class="metric__value">
+            <span data-humidity>—</span><span class="metric__unit"> %</span>
+          </p>
+        </div>
+      </section>
+
+      <section class="chart-section" aria-label="Sensor history">
+        <h2 class="chart-section__title">Last 30 Minutes</h2>
+        <div class="chart-container">
+          <canvas data-chart></canvas>
+          <div class="state-overlay" data-loading>
+            <p>Loading data…</p>
+          </div>
+          <div class="state-overlay" data-no-data hidden>
+            <p>No data available yet.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="controls" aria-label="Device control">
+        <h2>LED Control</h2>
+        <button type="button" class="led-toggle" data-led-toggle aria-pressed="false">
+          Turn ON
+        </button>
+      </section>
+    </main>
+
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>

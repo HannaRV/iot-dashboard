@@ -1,0 +1,198 @@
+/* Design tokens */
+
+:root {
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-text: #1e293b;
+  --color-text-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2rem;
+
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Reset */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* Header */
+
+.app-header {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-header h1 {
+  font-size: 1.5rem;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-warning);
+  transition: background 0.2s;
+}
+
+.connection-status[data-state='connected'] .indicator {
+  background: var(--color-success);
+}
+
+.connection-status[data-state='disconnected'] .indicator {
+  background: var(--color-danger);
+}
+
+/* Main layout */
+
+.app-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-4);
+}
+
+/* Metrics */
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+}
+
+.metric {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.metric__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.metric__value {
+  font-size: 3rem;
+  font-weight: 600;
+  margin: var(--space-2) 0 0;
+}
+
+.metric__unit {
+  color: var(--color-text-muted);
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+/* Chart */
+
+.chart-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  box-shadow: var(--shadow);
+}
+
+.chart-section__title {
+  font-size: 1.125rem;
+  margin-bottom: var(--space-3);
+}
+
+.chart-container {
+  position: relative;
+  height: 320px;
+}
+
+.state-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.state-overlay[hidden] {
+  display: none;
+}
+
+/* Controls */
+
+.controls {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.led-toggle {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-5);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.led-toggle:hover {
+  background: var(--color-primary-hover);
+}
+
+.led-toggle[aria-pressed='true'] {
+  background: var(--color-warning);
+}
