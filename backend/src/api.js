@@ -40,17 +40,18 @@ export function createApiRouter(database) {
     const minutes = parseMinutesParam(request.query.minutes)
     if (minutes === null) {
       return response.status(400).json({
-        error: `Invalid 'minutes' parameter. Must be a number between 1 and ${MAX_MINUTES}.`
+        error: `Invalid 'minutes' parameter. Must be a number between 1 and ${MAX_MINUTES}.`,
       })
     }
 
     const since = new Date(Date.now() - minutes * 60 * 1000)
 
     try {
-      const documents = await database.getCollection()
+      const documents = await database
+        .getCollection()
         .find(
           { timestamp: { $gte: since } },
-          { projection: { _id: 0, timestamp: 1, temperature: 1, humidity: 1 } }
+          { projection: { _id: 0, timestamp: 1, temperature: 1, humidity: 1 } },
         )
         .sort({ timestamp: 1 })
         .limit(MAX_DOCUMENTS)

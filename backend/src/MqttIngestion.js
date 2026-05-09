@@ -80,7 +80,11 @@ export class MqttIngestion {
     try {
       payload = JSON.parse(message.toString())
     } catch (error) {
-      console.error('Ignoring non-JSON payload:', message.toString())
+      console.error(
+        'Ignoring non-JSON payload:',
+        message.toString(),
+        error.message,
+      )
       return
     }
 
@@ -94,7 +98,7 @@ export class MqttIngestion {
       timestamp: new Date(),
       temperature: payload.temperature,
       humidity: payload.humidity,
-      deviceTimestamp: payload.timestamp
+      deviceTimestamp: payload.timestamp,
     }
 
     try {

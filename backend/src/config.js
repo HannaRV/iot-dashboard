@@ -31,15 +31,15 @@ export const config = Object.freeze({
     port: Number(process.env.MQTT_PORT) || 1883,
     keepalive: 60, // seconds; broker drops clients silent longer than this
     deviceId,
-    topic: `lnu/iot/${deviceId}/sensor`
+    topic: `lnu/iot/${deviceId}/sensor`,
   }),
   mongodb: Object.freeze({
     uri: requireEnv('MONGODB_URI'),
     dbName: process.env.DB_NAME || 'iot_dashboard',
     collection: 'sensor_readings',
-    retentionDays: 7 // documents older than this are auto-removed by MongoDB TTL
+    retentionDays: 7, // documents older than this are auto-removed by MongoDB TTL
   }),
   http: Object.freeze({
-    port: Number(process.env.HTTP_PORT) || 3000
-  })
+    port: Number(process.env.HTTP_PORT) || 3000,
+  }),
 })

@@ -42,7 +42,9 @@ export class Database {
     await this.#ensureTimeSeriesCollection(mongoDb)
     this.#collection = mongoDb.collection(this.#config.collection)
 
-    console.log(`MongoDB connected: db='${this.#config.dbName}', collection='${this.#config.collection}'`)
+    console.log(
+      `MongoDB connected: db='${this.#config.dbName}', collection='${this.#config.collection}'`,
+    )
   }
 
   /**
@@ -80,17 +82,21 @@ export class Database {
    * @param {import('mongodb').Db} mongoDb
    */
   async #ensureTimeSeriesCollection(mongoDb) {
-    const collections = await mongoDb.listCollections({ name: this.#config.collection }).toArray()
+    const collections = await mongoDb
+      .listCollections({ name: this.#config.collection })
+      .toArray()
     if (collections.length > 0) return
 
     await mongoDb.createCollection(this.#config.collection, {
       timeseries: {
         timeField: 'timestamp',
         metaField: 'deviceId',
-        granularity: 'seconds'
+        granularity: 'seconds',
       },
-      expireAfterSeconds: this.#config.retentionDays * 24 * 60 * 60
+      expireAfterSeconds: this.#config.retentionDays * 24 * 60 * 60,
     })
-    console.log(`Created time-series collection '${this.#config.collection}' with ${this.#config.retentionDays}-day TTL.`)
+    console.log(
+      `Created time-series collection '${this.#config.collection}' with ${this.#config.retentionDays}-day TTL.`,
+    )
   }
 }
