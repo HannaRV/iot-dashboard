@@ -1,23 +1,29 @@
 /**
- * @file Application entry point. Wires together database, MQTT ingestion,
- * and the HTTP API. Handles graceful shutdown on SIGINT and SIGTERM.
+ * @file Application entry point and composition root. Wires database, MQTT
+ * ingestion, and the HTTP API; handles graceful shutdown on SIGINT/SIGTERM.
  * @module src/server
+ * @author Hanna Rubio Vretby <hr222sy@student.lnu.se>
+ * @version 1.0.0
  */
 
 import express from 'express'
-import { database } from './Database.js'
-import { ingestion } from './MqttIngestion.js'
 import { config } from './config.js'
-import { router as apiRouter } from './api.js'
+import { Database } from './Database.js'
+import { MqttIngestion } from './MqttIngestion.js'
+import { createApiRouter } from './api.js'
+
+// Composition root: construct and wire all dependencies.
+const database = new Database(config.mongodb)
+const ingestion = new MqttIngestion(database, config.mqtt)
+const apiRouter = createApiRouter(database)
 
 const app = express()
-
 app.use('/api', apiRouter)
 
 let server = null
 
 /**
- * Start the application: connect to DB, begin ingesting MQTT messages,
+ * Start all subsystems: connect to DB, begin ingesting MQTT messages,
  * and start the HTTP server.
  */
 async function start() {

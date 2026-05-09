@@ -1,34 +1,51 @@
 /**
  * @file MQTT subscriber that ingests sensor messages and persists them to MongoDB.
  * @module src/MqttIngestion
+ * @author Hanna Rubio Vretby <hr222sy@student.lnu.se>
+ * @version 1.0.0
  */
 
 import mqtt from 'mqtt'
-import { config } from './config.js'
-import { database } from './Database.js'
 
 /**
  * Subscribes to the device's sensor topic on the MQTT broker, parses incoming
  * JSON messages, and persists each reading to the time-series collection with
- * a server-side timestamp.
+ * a server-side timestamp. Created in the application's composition root with
+ * its database dependency injected.
  */
 export class MqttIngestion {
+  #config = null
+  #database = null
   #client = null
+
+  /**
+   * @param {Database} database - The Database instance for persisting readings.
+   * @param {object} config - MQTT configuration sub-object.
+   * @param {string} config.broker - MQTT broker hostname.
+   * @param {number} config.port - MQTT broker port.
+   * @param {number} config.keepalive - MQTT keepalive in seconds.
+   * @param {string} config.deviceId - Device identifier stored as metadata.
+   * @param {string} config.topic - Topic to subscribe to for sensor messages.
+   */
+  constructor(database, config) {
+    this.#database = database
+    this.#config = config
+  }
 
   /**
    * Connect to the broker and start ingesting messages.
    */
   start() {
-    const url = `mqtt://${config.mqtt.broker}:${config.mqtt.port}`
-    this.#client = mqtt.connect(url, { keepalive: config.mqtt.keepalive })
+    const url = `mqtt://${this.#config.broker}:${this.#config.port}`
+    this.#client = mqtt.connect(url, { keepalive: this.#config.keepalive })
 
     this.#client.on('connect', () => {
       console.log(`MQTT connected to ${url}.`)
-      this.#client.subscribe(config.mqtt.topic, (error) => {
+      this.#client.subscribe(this.#config.topic, (error) => {
         if (error) {
           console.error('MQTT subscribe failed:', error)
         } else {
-          console.log(`Subscribed to ${config.mqtt.topic}.`)
+          console.log(`Subscribed to ${this.#config.topic}.`)
         }
       })
     })
@@ -44,6 +61,7 @@ export class MqttIngestion {
    */
   async stop() {
     if (this.#client) {
+      // end(force=false, opts, cb) waits for in-flight messages before closing.
       await new Promise((resolve) => this.#client.end(false, {}, resolve))
       this.#client = null
       console.log('MQTT disconnected.')
@@ -51,7 +69,9 @@ export class MqttIngestion {
   }
 
   /**
-   * Handle a single incoming sensor message.
+   * Handle a single incoming sensor message: parse JSON, validate, and persist
+   * with a server-side timestamp. Invalid payloads are logged and ignored
+   * rather than crashing the ingestion loop.
    *
    * @param {Buffer} message - Raw message buffer from the MQTT client.
    */
@@ -70,7 +90,7 @@ export class MqttIngestion {
     }
 
     const document = {
-      deviceId: config.mqtt.deviceId,
+      deviceId: this.#config.deviceId,
       timestamp: new Date(),
       temperature: payload.temperature,
       humidity: payload.humidity,
@@ -78,7 +98,7 @@ export class MqttIngestion {
     }
 
     try {
-      await database.getCollection().insertOne(document)
+      await this.#database.getCollection().insertOne(document)
     } catch (error) {
       console.error('Failed to persist sensor reading:', error)
     }
@@ -99,5 +119,3 @@ export class MqttIngestion {
     )
   }
 }
-
-export const ingestion = new MqttIngestion()
