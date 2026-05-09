@@ -1,0 +1,26 @@
+{
+  "name": "iot-dashboard-frontend",
+  "version": "1.0.0",
+  "description": "Frontend dashboard for the 1DV027 IoT project: visualizes historical and realtime sensor data, and controls the device LED via MQTT.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.js\"",
+    "format:check": "prettier --check \"src/**/*.js\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HannaRV/iot-dashboard.git"
+  },
+  "author": "Hanna Rubio Vretby <hr222sy@student.lnu.se>",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.3.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.3"
+  }
+}
