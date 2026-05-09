@@ -136,6 +136,8 @@ body {
   border-radius: var(--radius);
   padding: var(--space-4);
   box-shadow: var(--shadow);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .chart-section__title {
@@ -145,7 +147,8 @@ body {
 
 .chart-container {
   position: relative;
-  height: 320px;
+  height: 400px;
+  width: 100%;
 }
 
 .state-overlay {

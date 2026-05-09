@@ -121,7 +121,9 @@ function buildChartConfig(labels, temperatures, humidities) {
           borderColor: '#dc2626',
           backgroundColor: 'rgba(220, 38, 38, 0.1)',
           yAxisID: 'y-temperature',
-          tension: 0.3
+          tension: 0.3,
+          borderWidth: 1.5,
+          pointRadius: 0
         },
         {
           label: 'Humidity (%)',
@@ -129,7 +131,9 @@ function buildChartConfig(labels, temperatures, humidities) {
           borderColor: '#2563eb',
           backgroundColor: 'rgba(37, 99, 235, 0.1)',
           yAxisID: 'y-humidity',
-          tension: 0.3
+          tension: 0.3,
+          borderWidth: 1.5,
+          pointRadius: 0
         }
       ]
     },
@@ -138,6 +142,12 @@ function buildChartConfig(labels, temperatures, humidities) {
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       scales: {
+        x: {
+          ticks: {
+            autoSkip: true,
+            maxTicksLimit: 10
+          }
+        },
         'y-temperature': {
           type: 'linear',
           position: 'left',
@@ -147,7 +157,7 @@ function buildChartConfig(labels, temperatures, humidities) {
           type: 'linear',
           position: 'right',
           title: { display: true, text: 'Humidity (%)' },
-          grid: { drawOnChartArea: false } // Avoids double grid lines from two y-axes.
+          grid: { drawOnChartArea: false }
         }
       },
       plugins: {

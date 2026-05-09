@@ -22,6 +22,7 @@
   "author": "Hanna Rubio Vretby <hr222sy@student.lnu.se>",
   "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongodb": "^7.2.0",

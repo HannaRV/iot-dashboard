@@ -41,5 +41,8 @@ export const config = Object.freeze({
   }),
   http: Object.freeze({
     port: Number(process.env.HTTP_PORT) || 3000,
-  }),
+    // CORS origin — '*' allows any origin in development. At deploy, set
+    // CORS_ORIGIN env var to the deployed frontend URL.
+    corsOrigin: process.env.CORS_ORIGIN || '*'
+  })
 })

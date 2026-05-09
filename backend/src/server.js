@@ -7,6 +7,8 @@
  */
 
 import express from 'express'
+import cors from 'cors'
+
 import { config } from './config.js'
 import { Database } from './Database.js'
 import { MqttIngestion } from './MqttIngestion.js'
@@ -18,6 +20,7 @@ const ingestion = new MqttIngestion(database, config.mqtt)
 const apiRouter = createApiRouter(database)
 
 const app = express()
+app.use(cors({ origin: config.http.corsOrigin }))
 app.use('/api', apiRouter)
 
 let server = null

@@ -128,8 +128,8 @@ while True:
     try:
         dht_sensor.measure()
         # Add small random noise to simulate real DHT22 sensor variation (spec: ±0.5°C, ±2-5% RH).
-        temperature = round(dht_sensor.temperature() + random.uniform(-0.3, 0.3), 1)
-        humidity = round(dht_sensor.humidity() + random.uniform(-1.0, 1.0), 1)
+        temperature = round(dht_sensor.temperature() + random.uniform(-0.15, 0.15), 1)
+        humidity = round(dht_sensor.humidity() + random.uniform(-0.5, 0.5), 1)
     except OSError as e:
         print(f'Sensor read failed: {e}')
         utime.sleep(PUBLISH_INTERVAL_SEC)
