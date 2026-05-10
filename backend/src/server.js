@@ -28,7 +28,7 @@ const apiRouter = createApiRouter(database)
 
 const app = express()
 app.use(express.static(frontendDir))
-app.use('/api', apiRouter)
+app.use('/api/v1', apiRouter)
 
 let server = null
 

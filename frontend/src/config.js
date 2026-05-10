@@ -12,7 +12,7 @@ const deviceId = 'hr222sy'
 export const config = Object.freeze({
   api: Object.freeze({
     // Frontend and backend are served same-origin (Express in dev and prod), so all API requests are relative paths.
-    baseUrl: '/api',
+    baseUrl: '/api/v1',
     historicalWindowMinutes: 10,
     requestTimeoutMs: 10000
   }),

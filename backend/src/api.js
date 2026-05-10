@@ -23,6 +23,26 @@ export function createApiRouter(database) {
   const router = express.Router()
 
   /**
+   * GET /api
+   *
+   * API index — describes available endpoints. Useful for ad-hoc discovery
+   * and as a liveness check for the deployed backend.
+   *
+   * Response:
+   *   200 OK - JSON object describing the API.
+   */
+  router.get('/', (request, response) => {
+    response.json({
+      name: '1DV027 IoT Dashboard API',
+      description: 'Historical sensor data for the IoT Dashboard.',
+      endpoints: {
+        'GET /api/v1/data?minutes=N':
+          'Sensor readings from the last N minutes (1-1440, default 30). Returns ascending JSON array.',
+      },
+    })
+  })
+
+  /**
    * GET /api/data
    *
    * Returns sensor readings from the last N minutes, sorted oldest first
