@@ -25,7 +25,7 @@ An end-to-end IoT pipeline that simulates an ESP32 device publishing temperature
 - Bidirectional device control — toggle the LED from the dashboard
 - Time-series data persistence with automatic 7-day retention
 - Same-origin deployment — Express serves both API and static frontend
-- Defensive firmware with `try/except` per blocking call and reconnect-with-backoff
+- Resilient firmware that gracefully handles broker disconnects and sensor errors
 
 ---
 
@@ -78,7 +78,7 @@ flowchart LR
     Backend <-->|"MongoDB driver (TLS)"| DB
 ```
 
-The browser receives realtime data and sends commands directly through the broker over WSS. The backend handles persistence and serves a sliding 10-minute window of historical data on initial load via `GET /api/v1/data?minutes=10`.
+The browser receives realtime data and sends commands directly through the broker over WSS, while the backend handles persistence and serves a sliding 10-minute window of historical data on initial load via `GET /api/v1/data?minutes=10`.
 
 ---
 
@@ -122,6 +122,8 @@ The application will be available at `http://localhost:3000`.
 
 To run the device simulation, open `wokwi/diagram.json` in VS Code and start the Wokwi simulator.
 
+No separate frontend build step is required — Express serves the static frontend files directly via `express.static`.
+
 ---
 
 ## Security
@@ -160,7 +162,7 @@ nginx terminates TLS via a Let's Encrypt certificate and reverse-proxies all tra
 
 - Course examples and guidance by Oxana Lundström (LNU) and Alisa Lincke (LNU)
 - Wokwi ESP32 starter project from the course Moodle
-- [broker.emqx.io](https://www.emqx.com/en/mqtt/public-mqtt5-broker) — public MQTT broker used for messaging
+- [broker.emqx.io](https://www.emqx.com/en/mqtt/public-mqtt5-broker)
 - [Chart.js documentation](https://www.chartjs.org/docs/latest/)
 - [mqtt.js documentation](https://github.com/mqttjs/MQTT.js)
 - [MongoDB time-series documentation](https://www.mongodb.com/docs/manual/core/timeseries-collections/)
