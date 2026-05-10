@@ -17,7 +17,7 @@ COPY backend/src ./src
 # Frontend as sibling to backend (mirrors local dev structure so
 # path.resolve(__dirname, '../../frontend') resolves identically in
 # both environments)
-COPY frontend/index.html frontend/style.css /usr/src/app/frontend/
+COPY frontend/index.html frontend/style.css frontend/favicon.ico /usr/src/app/frontend/
 COPY frontend/src /usr/src/app/frontend/src
 
 EXPOSE 3000
