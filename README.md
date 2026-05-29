@@ -103,11 +103,12 @@ npm install
 Create a `.env` file in `backend/` based on `.env.example`:
 
 ```env
-PORT=3000
-MQTT_BROKER_URL=mqtt://broker.emqx.io:1883
-MQTT_TOPIC_SENSOR=lnu/iot/hr222sy/sensor
 MONGODB_URI=your_mongodb_connection_string
 DB_NAME=iot_dashboard
+HTTP_PORT=3000
+MQTT_BROKER=mqtt://broker.emqx.io:1883
+MQTT_PORT=1883
+
 ```
 
 ### Run the Application
@@ -160,7 +161,7 @@ nginx terminates TLS via a Let's Encrypt certificate and reverse-proxies all tra
 
 ## Acknowledgements
 
-- Course examples and guidance by Oxana Lundström (LNU) and Alisa Lincke (LNU)
+- Course examples and guidance by Oxana Sachenkova (LNU) and Alisa Lincke (LNU)
 - Wokwi ESP32 starter project from the course Moodle
 - [broker.emqx.io](https://www.emqx.com/en/mqtt/public-mqtt5-broker)
 - [Chart.js documentation](https://www.chartjs.org/docs/latest/)
