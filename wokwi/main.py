@@ -99,13 +99,12 @@ def connect_mqtt():
 
 
 def reconnect_mqtt():
-    """Reconnect to the MQTT broker after a disconnection, retrying until successful."""
-    print('MQTT connection lost. Reconnecting...')
+    """Connect to the MQTT broker, retrying until successful."""
     while True:
         try:
             return connect_mqtt()
         except OSError as e:
-            print(f'Reconnect failed: {e}. Retrying in {RECONNECT_DELAY_SEC}s...')
+            print(f'MQTT connect failed: {e}. Retrying in {RECONNECT_DELAY_SEC}s...')
             utime.sleep(RECONNECT_DELAY_SEC)
 
 
@@ -150,3 +149,4 @@ while True:
         continue
 
     utime.sleep(PUBLISH_INTERVAL_SEC)
+    
