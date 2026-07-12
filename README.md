@@ -12,8 +12,17 @@
 
 An end-to-end IoT pipeline that simulates an ESP32 device publishing temperature and humidity readings via MQTT. The dashboard combines historical visualization with real-time updates and bidirectional device control, persisting time-series data in MongoDB.
 
-**Live Dashboard:** https://iot-dashboard-hr222sy.duckdns.org  
+**Live Dashboard:** Discontinued — see note below
+
 **Wokwi Simulation:** https://wokwi.com/projects/463274235615279105
+
+> **Note:** The live dashboard was hosted on DigitalOcean during the course 
+> and has been discontinued after grading. Screenshots below show the 
+> application in action. The Wokwi simulation link above still works — 
+> it hosts the ESP32 firmware simulation on Wokwi's own infrastructure. 
+> The complete source code, Docker setup, and firmware remain in this 
+> repository. To run the application locally, follow the "Getting Started" 
+> instructions below.
 
 ---
 
@@ -143,7 +152,7 @@ No separate frontend build step is required — Express serves the static fronte
 
 ## Deployment
 
-The application is deployed on a DigitalOcean droplet using Docker and nginx:
+The application was deployed on a DigitalOcean droplet using Docker and nginx:
 
 ```bash
 # Build and run the container
@@ -155,7 +164,7 @@ docker run -d --name iot-dashboard \
   iot-dashboard
 ```
 
-nginx terminates TLS via a Let's Encrypt certificate and reverse-proxies all traffic to the container, which serves both the static frontend and the REST API at `/api/v1`.
+nginx terminated TLS via a Let's Encrypt certificate and reverse-proxied all traffic to the container, which serves both the static frontend and the REST API at `/api/v1`.
 
 ---
 
