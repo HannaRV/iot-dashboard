@@ -164,7 +164,7 @@ docker run -d --name iot-dashboard \
   iot-dashboard
 ```
 
-nginx terminated TLS via a Let's Encrypt certificate and reverse-proxied all traffic to the container, which serves both the static frontend and the REST API at `/api/v1`.
+nginx terminated TLS via a Let's Encrypt certificate and reverse-proxied all traffic to the container, which served both the static frontend and the REST API at `/api/v1`.
 
 ---
 
